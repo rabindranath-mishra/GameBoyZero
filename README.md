@@ -48,9 +48,9 @@ The PI Zero 2 W has a mini HDMI port and needs a converter to connect to any mon
     }
     ```
 
-3. Unmount the SD car connect it to the PI and boot.
+3. Unmount the SD card form your computer and insert it to the PI and boot.
 
-Post installation the PI should connect to your home network with SSH enabled. Check the PI's IP from your home router and connect the the PI using any SSH client (I use PuTTY). The default user name and password are 'pi' an 'raspberry'.
+Post installation the PI should connect to your home network with SSH enabled. Check the PI's IP from your home router and connect to the PI using any SSH client (I use PuTTY). The default user name and password are 'pi' an 'raspberry'.
 
 Rest of the document use SSH for installation and configuration.
 
@@ -84,9 +84,55 @@ sudo reboot
     #hdmi_drive=2
     ```
 
-* Comment out dtoverlay=vc4-kms-v3d (if present)
+* Comment out 'dtoverlay=vc4-kms-v3d' (if present)
 * Comment out all configurations related to HDMI
 
 After reboot the display should work.
 
+## 4. Updating and Configuring Retropie
+
+Update the Retropie, underlying OS and Packages using the below script. It may take two or more attempts. For me the first attempt gave some errors, mostly because the 'Debian Buster' is a old archived Raspbian version, but when I tried 2-3 times it updated fine.
+
+``` bash
+sudo ~/RetroPie-Setup/retropie_setup.sh
+```
+
+Enable Samba: This enables copying the ROMs and bios from your computer to the GBA over network share.
+
+``` bash
+sudo ~/RetroPie-Setup/retropie_setup.sh # Configuration/Tools > samba > Install and enable samba share
+
+sudo reboot
+```
+
+## 5. GPIO Pin Configuration
+
+Raspberry Pi GPIOs needs to be used for Display, Keys and PWM audio. There are 12 keys needed, one PWM audio, all in all we need 13 pins in addition to the pins that the display TFT uses. Fom the display [documentation](https://www.waveshare.com/wiki/3.5inch_RPi_LCD_(A)) we find that the display header occupies 1-28 physical pins of the PI but the pins '3,5,7,8,10,12,13,15,16' are not used, hence they can be used. We would use the pin 2 and 6 to supply power to the PI.
+
+We will use the below pins for the purpose mentioned.
+
+**GBA GPIO Button Wiring Table:**
+
+| GBA Button    | Physical Pin | BCM GPIO |
+| ------------- | ------------ | -------- |
+| **UP**        | 3            | GPIO 2   |
+| **DOWN**      | 5            | GPIO 3   |
+| **LEFT**      | 7            | GPIO 4   |
+| **RIGHT**     | 8            | GPIO 14  |
+| **A**         | 10           | GPIO 15  |
+| **B**         | 13           | GPIO 27  |
+| **X**         | 15           | GPIO 22  |
+| **Y**         | 16           | GPIO 23  |
+| **SELECT**    | 29           | GPIO 5   |
+| **START**     | 31           | GPIO 6   |
+| **L Trigger** | 35           | GPIO 19  |
+| **R Trigger** | 40           | GPIO 21  |
+| **Key GND**   | 30           | -        |
+| **PWM Audio** | 32           | GPIO 12  |
+| **VCC**       | 2            | +5V      |
+| **GND**       | 6            | -        |
+
+![Pin Diagram](/Doc/img/BOARD-Layout-CMPLETE_zero2w.jpg)
+
+We wont need a pull-down resistor for the keys as I have found that the internal pull-down resistors of the PI are good enough.
 
