@@ -29,10 +29,10 @@ Download the latest retropie image from retropie.or.uk and install on the PI. Fo
 
 The PI Zero 2 W has a mini HDMI port and needs a converter to connect to any monitor or TV. I did not have one so followed the below steps to install in a headless manner.
 
-1. After the image is written on the the SD card connect he SD car to a computer.
+1. After the image is written on the the SD card connect he SD card to a computer.
 2. Create the below two files in the root of the SD card.
 
-     * Create a empty text file named 'ssh' without file extension. This will enable the SSH after the first boot.
+     * Create an empty text file named 'ssh' without file extension. This will enable the SSH after the first boot.
      * Create a text file named 'wpa_supplicant.conf' and update your home WIFI details. This way PI will connect to the home network automatically.
 
      ``` text
@@ -66,7 +66,7 @@ sudo ./LCD35-show
 sudo reboot
 ```
 
-Note: Unfortunately the command 'sudo ./LCD35-show' alters the '/boot/config.txt' in a way that is not desirable. Though the display might work but other configurations will be lost. Hence better to take a copy of the '/boot/config.txt' before and restore it after. The blow configuration is the only this we need.
+Note: Unfortunately the command 'sudo ./LCD35-show' alters the '/boot/config.txt' in a way that is not desirable. Though the display might work but other configurations will be lost. Hence better to take a copy of the '/boot/config.txt' before and restore it after. The blow configuration is the only thing we need.
 
 * Configure PI (Debian Buster) to use SPI instaed of HDMI as display with strps below.
 
@@ -109,7 +109,7 @@ sudo reboot
 
 ## 5. GPIO Pin Configuration
 
-Raspberry Pi GPIOs needs to be used for Display, Keys and PWM audio. There are 12 keys needed, one PWM audio, all in all we need 13 pins in addition to the pins that the display TFT uses. Fom the display [documentation](https://www.waveshare.com/wiki/3.5inch_RPi_LCD_(A)) we find that the display header occupies 1-28 physical pins of the PI but the pins '3,5,7,8,10,12,13,15,16' are not used, hence they can be used. We would use the pin 2 and 6 to supply power to the PI.
+Raspberry Pi GPIOs needs to be used for Display, Keys, PWM audio and power supply. There are 12 keys needed, one PWM audio, and 2 fpr power; all in all we need 15 pins in addition to the pins that the display TFT uses. Fom the display [documentation](https://www.waveshare.com/wiki/3.5inch_RPi_LCD_(A)) we find that the display header occupies 1-28 physical pins of the PI but the pins '3,5,7,8,10,12,13,15,16' are not used, hence they can be used. We would use the pin 2 and 6 to supply power to the PI.
 
 We will use the below pins for the purpose mentioned.
 
@@ -251,8 +251,8 @@ alsamixer  # Unmute PCM/Master (↑ arrows)  # PCM → 90%, Master → 80%
 
 The default Retropie configuration do not give proper performance for games and keeps on hanging on the Raspberry Pi Zero 2 W. We need to tweak some configurations to make it performant and stable.
 
-* Use a >2A power source and connect the power source and Raspberry Pi using a good enough gauge wire to ensure PI do not browning out under load. The chosen 'Seeed Studio Lipo Rider Plus (Charger/Booster)' is good for the build.
-* Limit the resolution for stable performance. The frame buffer for the SPI display is the biggest performance killer. Use below configuration.
+* Use a >2A power source and connect the power source and Raspberry Pi using a good enough gauge wire to ensure PI not browning out under load. The chosen 'Seeed Studio Lipo Rider Plus (Charger/Booster)' is good for the build.
+* Limit the resolution for stable performance. The frame buffer for the SPI display is the biggest performance killer. Use below configuration to mimize the load.
 
     ``` text
     #'/boot/config.txt' ->
@@ -267,7 +267,7 @@ The default Retropie configuration do not give proper performance for games and 
     hdmi_blanking=2        # Blank out the HDMI
     ```
 
-* Select a theme that is suitable for the display size. I found the 'TFT' theme to be the best.
+* Select a theme that is suitable for the display size. I found the **'TFT'** theme to be the best.
 
     Install Theme:
 
@@ -285,7 +285,7 @@ The default Retropie configuration do not give proper performance for games and 
 
     ```
 
-* Use lightweight emulators and drivers (core selection matters)
+* Use lightweight emulators and drivers
 
     Lightweight core config:
 
