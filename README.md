@@ -56,6 +56,37 @@ Rest of the document use SSH for installation and configuration.
 
 ## 3. Display (Waveshare 3.5" TFT)
 
-The 3.5" TFT display directly fits on the the raspberry pi GPIO header no soldering needed. Installing the driver is bit cumbersome as the instructions are not well written. Pay attention to the raspberry pi model used and the version of operating system installed. Mine was a pi zero 2 w and the OS was 
+The 3.5" TFT display directly fits on the the raspberry pi GPIO header no soldering needed. Installing the driver is bit cumbersome as the [instructions](https://www.waveshare.com/wiki/3.5inch_RPi_LCD_(A)) are not well written. Pay attention to the raspberry pi model used and the version of operating system installed. Mine was a 'pi zero 2 w' and the OS was 'debian buster' hence I followed the below steps.
 
-[Link to Instructions] (https://www.waveshare.com/wiki/3.5inch_RPi_LCD_(A))
+```  bash
+git clone https://github.com/waveshare/LCD-show.git
+cd LCD-show/
+sudo ./LCD35-show
+
+sudo reboot
+```
+
+* Configure PI (Debian Buster) to use SPI instaed of HDMI as display with strps below.
+
+    Edit '/boot/config.txt' (sudo nano /boot/config.txt)
+
+    ``` text
+    dtparam=spi=on
+    dtoverlay=waveshare35a
+    display_rotate=0  # Adjust 90/180/270 as needed
+
+    #dtoverlay=vc4-kms-v3d
+    #hdmi_force_hotplug=1
+    #max_usb_current=1
+    #hdmi_group=2
+    #hdmi_mode=87
+    #hdmi_cvt=480 320 60 6 0 0 0
+    #hdmi_drive=2
+    ```
+
+* Comment out dtoverlay=vc4-kms-v3d (if present)
+* Comment out all configurations related to HDMI
+
+After reboot the display should work.
+
+
