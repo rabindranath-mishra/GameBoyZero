@@ -222,7 +222,7 @@ This should work. When the 'Emulation Station starts' it should detect 1 gamepad
 
 ## 6. PWM Audio Configuration
 
-Configure the Pin 32 and 33 (GPIO 12 & 13) as the PWM OUT.
+Configure the Pin 32 and 33 (GPIO 12 & 13) as the PWM OUT. The 'SmartElex Digital Speaker Module' used in the build alredy has a RC filter to filter the PWM signal hence we do not have to build a separate RC filter.
 
 Edit '/boot/config.txt' (sudo nano /boot/config.txt)
 
@@ -333,6 +333,8 @@ The default Retropie configuration do not give proper performance for games and 
     sudo reboot
     ```
 
-You can refer the config file of my build (/Config/).
+You can refer the config file of my build **(/Config/)**.
+
+The only work left is to do the soldering and wiring and fitting work. Refer the images of my build and wiring **(/Doc/img/)**.
 
 **!!Congratulations!! !!You should be good to go. Happy Gaming!!**
