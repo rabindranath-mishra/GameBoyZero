@@ -66,6 +66,8 @@ sudo ./LCD35-show
 sudo reboot
 ```
 
+Note: Unfortunately the command 'sudo ./LCD35-show' alters the '/boot/config.txt' in a way that is not desirable. Though the display might work but other configurations will be lost. Hence better to take a copy of the '/boot/config.txt' before and restore it after. The blow configuration is the only this we need.
+
 * Configure PI (Debian Buster) to use SPI instaed of HDMI as display with strps below.
 
     Edit '/boot/config.txt' (sudo nano /boot/config.txt)
@@ -136,30 +138,201 @@ We will use the below pins for the purpose mentioned.
 
 The pin 8 and 10 (GPIO 14 and GPIO 15) are default UART pins hence to use them as INPUT pins we have to disable the UART in config .txt.
 
-We wont need a pull-down resistor for GPIO pins, I have found that the internal pull-down resistors of the PI are good enough.
-
 Edit '/boot/config.txt' (sudo nano /boot/config.txt)
 
-    ``` text
-    # Uncomment some or all of these to enable the optional hardware interfaces
-    #dtparam=i2c_arm=on
-    #dtparam=i2s=on
-    #enable_uart=1
-    # Uncomment this to enable the lirc-rpi module
-    #dtoverlay=lirc-rpi
-    ```
+``` text
+# Uncomment some or all of these to enable the optional hardware interfaces
+#dtparam=i2c_arm=on
+#dtparam=i2s=on
+#enable_uart=1
+# Uncomment this to enable the lirc-rpi module
+#dtoverlay=lirc-rpi
+```
 
 Basically disable\comment all other optional hardware interfaces.
 
-**Wiring Diagram (Active LOW)**
+**Wiring Diagram (Active LOW):**
+
+Pull-Down (External Resistor):
 
 ``` text
-3.3V (Pin 1) ────────────────────────────────|
-|                                            |
-├─[Internal Pull-up]── GPIO Pin (INPUT) ── Button ── 10kΩ ── GND (Pin 30)
-│
-Pi GPIO Header │
-(Pin 30 = GND6)┘
+Pin 1 (3.3V)
+   |
+   +----[BUTTON]----+  ← Press here
+   |                |
+   |              GPIO2 (Pin 3)
+   |                |
+   +----[10kΩ]------+
+                    |
+                Pin 30 (GND)
 ```
 
-The 10kΩ Pull-Down resistor is optional.
+Pull-Up (Internal - No Resistor): <- I used this in my build
+
+``` text
+GPIO2 (Pin 3) ─────[BUTTON]──── Pin 30 (GND)
+     ↑
+Internal 50kΩ Pull-up (enabled in software)
+```
+
+I found that the internal pull-up resistors of the PI are good enough, using an external pull-down resistor is optional.
+
+Install the 'raspi-gpio' utility and use command 'sudo raspi-gpio get' to check if all the gpio pins have the right configuration.
+
+**Configuring the GPIO Controller:**
+
+In order to provide a controller interface to RetroPie we would need a GPIO controller and that would be GPIONext.
+Install and configure GPIOnext as per below steps.
+
+``` bash
+# Update system
+sudo apt update && sudo apt full-upgrade -y
+sudo apt install python3-pip git -y
+
+# Install evdev (required for joystick emulation)
+sudo pip3 install evdev
+
+# Clone and install GPIOnext
+cd ~
+git clone https://github.com/mholgatem/GPIOnext.git
+cd GPIOnext
+sudo bash install.sh
+
+# Configure GPIOnext for your GBA buttons
+gpionext config
+```
+
+``` text
+# During gpionext config:
+Joypad 1 → Select (1)
+D-Pad → 1
+Buttons → 8
+
+# Map your exact pins (BCM numbers):
+Up: GPIO 2 (Pin 3)
+Down: GPIO 3 (Pin 5)  
+Left: GPIO 4 (Pin 7)
+...
+
+# Press buttons when prompted → Save → Exit
+gpionext start
+```
+
+This should work. When the 'Emulation Station starts' it should detect 1 gamepad and you can map the keys in ES.
+
+## 6. PWM Audio Configuration
+
+Configure the Pin 32 and 33 (GPIO 12 & 13) as the PWM OUT.
+
+Edit '/boot/config.txt' (sudo nano /boot/config.txt)
+
+``` text
+# Enable audio (loads snd_bcm2835)
+dtparam=audio=on
+audion_pwm_mode=2
+dtoverlay=audremap,pins_12_13
+```
+
+Use the below commands to check for audio
+
+``` bash
+# List available devices
+aplay -l
+# Look for: card 0: Headphones [bcm2835 Headphones]
+
+# Test device
+aplay -D default /usr/share/sounds/alsa/Front_Center.wav
+
+# Check mixer levels
+alsamixer  # Unmute PCM/Master (↑ arrows)  # PCM → 90%, Master → 80%
+```
+
+## 7. Performance Optimizations
+
+The default Retropie configuration do not give proper performance for games and keeps on hanging on the Raspberry Pi Zero 2 W. We need to tweak some configurations to make it performant and stable.
+
+* Use a >2A power source and connect the power source and Raspberry Pi using a good enough gauge wire to ensure PI do not browning out under load. The chosen 'Seeed Studio Lipo Rider Plus (Charger/Booster)' is good for the build.
+* Limit the resolution for stable performance. The frame buffer for the SPI display is the biggest performance killer. Use below configuration.
+
+    ``` text
+    #'/boot/config.txt' ->
+
+    # Display
+    #dtoverlay=vc4-fkms-v3d
+    dtparam=spi=on
+    dtoverlay=waveshare35a
+    framebuffer_width=320  # Limit resolution
+    framebuffer_height=240 # Limit resolution
+    dtoverlay=spi0-1cs     # Enable only one SPI device
+    hdmi_blanking=2        # Blank out the HDMI
+    ```
+
+* Select a theme that is suitable for the display size. I found the 'TFT' theme to be the best.
+
+    Install Theme:
+
+    ``` text
+    sudo ~/RetroPie-Setup/retropie_setup.sh
+    → Configuration/Tools → esthemes → Install from binary/theme gallery
+    → View gallery → Select theme → Install
+
+    ```
+
+    Apply Theme:
+
+    ``` text
+    Start → UI Settings → Theme Set → [Your theme name] (e.g. -> TFT)
+
+    ```
+
+* Use lightweight emulators and drivers (core selection matters)
+
+    Lightweight core config:
+
+    ``` bash
+    sudo nano ~/.config/retroarch/retroarch.cfg
+
+    # Global Config
+    menu_driver = "rgui"
+    video_driver = "dispmanx"
+
+    menu_enable_widgets = "false"
+    menu_show_advanced_settings = "false"
+
+    video_scale = "1.0"
+    video_smooth = "false"
+    video_shader_enable = "false"
+    video_filter = ""
+    input_overlay_enable = "false"
+
+    audio_driver = "alsa"
+
+    sudo reboot
+    ```
+
+    Configure lightweight emulators:
+
+    ``` bash
+
+    sudo nano /opt/retropie/configs/nes/emulators.cfg
+
+    default = "lr-fceumm"
+
+    sudo nano /opt/retropie/configs/snes/emulators.cfg
+
+    default = "lr-snes9x2002"
+
+    sudo nano /opt/retropie/configs/gba/emulators.cfg
+
+    default = "lr-gpsp"
+
+    sudo nano /opt/retropie/configs/psx/emulators.cfg
+
+    default = "pcsx-rearmed"
+
+    sudo reboot
+    ```
+
+You can refer the config file of my build (/Config/).
+
+**!!Congratulations!! !!You should be good to go. Happy Gaming!!**
