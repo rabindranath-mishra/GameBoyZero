@@ -4,7 +4,7 @@ Ultimate **Game Boy Advanced style Handheld** using Pi Zero 2W + Retropie + Wave
 
 ![GBA Handheld](Doc/img/GBA1.jpeg)
 
-## BOM (Bill of Materials) - ₹4575 = ~₹5000 Total
+## BOM (Bill of Materials) - ₹4575 = ~₹5000 Total (2025 price)
 
 | Component | Model | Qty | Price (₹) | Source |
 | --------- | ----- | --- | --------- | ------ |
