@@ -134,5 +134,32 @@ We will use the below pins for the purpose mentioned.
 
 ![Pin Diagram](/Doc/img/BOARD-Layout-CMPLETE_zero2w.jpg)
 
-We wont need a pull-down resistor for the keys as I have found that the internal pull-down resistors of the PI are good enough.
+The pin 8 and 10 (GPIO 14 and GPIO 15) are default UART pins hence to use them as INPUT pins we have to disable the UART in config .txt.
 
+We wont need a pull-down resistor for GPIO pins, I have found that the internal pull-down resistors of the PI are good enough.
+
+Edit '/boot/config.txt' (sudo nano /boot/config.txt)
+
+    ``` text
+    # Uncomment some or all of these to enable the optional hardware interfaces
+    #dtparam=i2c_arm=on
+    #dtparam=i2s=on
+    #enable_uart=1
+    # Uncomment this to enable the lirc-rpi module
+    #dtoverlay=lirc-rpi
+    ```
+
+Basically disable\comment all other optional hardware interfaces.
+
+**Wiring Diagram (Active LOW)**
+
+``` text
+3.3V (Pin 1) ────────────────────────────────|
+|                                            |
+├─[Internal Pull-up]── GPIO Pin (INPUT) ── Button ── 10kΩ ── GND (Pin 30)
+│
+Pi GPIO Header │
+(Pin 30 = GND6)┘
+```
+
+The 10kΩ Pull-Down resistor is optional.
