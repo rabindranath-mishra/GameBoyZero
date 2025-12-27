@@ -66,9 +66,9 @@ sudo ./LCD35-show
 sudo reboot
 ```
 
-Note: Unfortunately the command 'sudo ./LCD35-show' alters the '/boot/config.txt' in a way that is not desirable. Though the display might work but other configurations will be lost. Hence better to take a copy of the '/boot/config.txt' before and restore it after. The blow configuration is the only thing we need.
+Note: Unfortunately the command 'sudo ./LCD35-show' alters the '/boot/config.txt' in a way that is not desirable. Though the display might work but other configurations will be lost. Hence better to take a copy of the '/boot/config.txt' before and restore it after. The below configurations are the only things we need.
 
-* Configure PI (Debian Buster) to use SPI instaed of HDMI as display with strps below.
+* Configure PI (Debian Buster) to use SPI instaed of HDMI as display with steps below.
 
     Edit '/boot/config.txt' (sudo nano /boot/config.txt)
 
