@@ -21,7 +21,7 @@ Ultimate **Game Boy Advanced style Handheld** using Pi Zero 2W + Retropie + Wave
 
 ## 1. 3D Printed Case
 
-I have provided the CAD and STL files (/3D Model) , one can 3d print at home or order a printed case from any 3d print vendor.
+I have designed and provided the CAD and STL files (/3D Model) , one can 3d print at home or order a printed case from any 3d print vendor.
 
 ## 2. Installing Retropie on the Raspberry Pi Zero 2 W
 
