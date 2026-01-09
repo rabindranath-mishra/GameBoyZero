@@ -21,7 +21,7 @@ Ultimate **Game Boy Advanced style Handheld** using Pi Zero 2W + Retropie + Wave
 
 ## 1. 3D Printed Case
 
-I have provided the CAD and STL files (/3D Model) , one can 3d print at home or order a printed case from any 3d print vendor.
+I have designed and provided the CAD and STL files (/3D Model) , one can 3d print at home or order a printed case from any 3d print vendor.
 
 ## 2. Installing Retropie on the Raspberry Pi Zero 2 W
 
@@ -66,9 +66,9 @@ sudo ./LCD35-show
 sudo reboot
 ```
 
-Note: Unfortunately the command 'sudo ./LCD35-show' alters the '/boot/config.txt' in a way that is not desirable. Though the display might work but other configurations will be lost. Hence better to take a copy of the '/boot/config.txt' before and restore it after. The blow configuration is the only thing we need.
+Note: Unfortunately the command 'sudo ./LCD35-show' alters the '/boot/config.txt' in a way that is not desirable. Though the display might work but other configurations will be lost. Hence better to take a copy of the '/boot/config.txt' before and restore it after. The below configurations are the only things we need.
 
-* Configure PI (Debian Buster) to use SPI instaed of HDMI as display with strps below.
+* Configure PI (Debian Buster) to use SPI instaed of HDMI as display with steps below.
 
     Edit '/boot/config.txt' (sudo nano /boot/config.txt)
 
@@ -93,7 +93,7 @@ After reboot the display should work.
 
 ## 4. Updating and Configuring Retropie
 
-Update the Retropie, underlying OS and Packages using the below script. It may take two or more attempts. For me the first attempt gave some errors, mostly because the 'Debian Buster' is a old archived Raspbian version, but when I tried 2-3 times it updated fine.
+Update the Retropie, underlying OS and Packages using the below script. It may take two or more attempts. For me the first attempt gave some errors, mostly because the 'Debian Buster' is an old archived Raspbian version, but when I tried 2-3 times it updated fine.
 
 ``` bash
 sudo ~/RetroPie-Setup/retropie_setup.sh
@@ -109,7 +109,7 @@ sudo reboot
 
 ## 5. GPIO Pin Configuration
 
-Raspberry Pi GPIOs needs to be used for Display, Keys, PWM audio and power supply. There are 12 keys needed, one PWM audio, and 2 fpr power; all in all we need 15 pins in addition to the pins that the display TFT uses. Fom the display [documentation](https://www.waveshare.com/wiki/3.5inch_RPi_LCD_(A)) we find that the display header occupies 1-28 physical pins of the PI but the pins '3,5,7,8,10,12,13,15,16' are not used, hence they can be used. We would use the pin 2 and 6 to supply power to the PI.
+Raspberry Pi GPIOs needs to be used for Display, Keys, PWM audio and power supply. There are 12 keys needed, one PWM audio, and 2 for power; all in all we need 15 pins in addition to the pins that the display TFT uses. Fom the display [documentation](https://www.waveshare.com/wiki/3.5inch_RPi_LCD_(A)) we find that the display header occupies 1-28 physical pins of the PI but the pins '3,5,7,8,10,12,13,15,16' are not used, hence they can be used. We would use the pin 2 and 6 to supply power to the PI.
 
 We will use the below pins for the purpose mentioned.
 
